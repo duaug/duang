@@ -1,1 +1,129 @@
+<html>
+        <head>
+        <script>
+            function Ajax(type, url, data, success, failed) {
+                // 创建ajax对象
+                var xhr = null;
+                if (window.XMLHttpRequest) {
+                    xhr = new XMLHttpRequest();
+                } else {
+                    xhr = new ActiveXObject('Microsoft.XMLHTTP')
+                }
 
+                var type = type.toUpperCase();
+                // 用于清除缓存
+                var random = Math.random();
+
+                if (typeof data == 'object') {
+                    var str = '';
+                    for (var key in data) {
+                        str += key + '=' + data[key] + '&';
+                    }
+                    data = str.replace(/&$/, '');
+                }
+
+                if (type == 'GET') {
+                    if (data) {
+                        xhr.open('GET', url + '?' + data, true);
+                    } else {
+                        xhr.open('GET', url + '?t=' + random, true);
+                    }
+                    xhr.send();
+
+                } else if (type == 'POST') {
+                    xhr.open('POST', url, true);
+                    // 如果需要像 html 表单那样 POST 数据，请使用 setRequestHeader() 来添加 http 头。
+                    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                    xhr.send(data);
+                }
+
+                // 处理返回数据
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4) {
+                        if (xhr.status == 200) {
+                            success(xhr.responseText);
+                        } else {
+                            if (failed) {
+                                failed(xhr.status);
+                            }
+                        }
+                    }
+                }
+            }
+        </script>
+        <script>
+        function get(){
+            var id = document.getElementsByName('id')[0].value;
+            data = 'type=illust&id=' + id;
+            Ajax(
+                'get', 
+                'https://api.imjad.cn/pixiv/v2/', 
+                data,
+                function(data){
+                    document.getElementById('imglist').innerHTML = "";
+                    document.getElementsByClassName("meta")[0].innerText = "读取中…";
+                    data = JSON.parse(data);
+                    if(!data.error){
+                        if(data.illust.page_count==1){
+                            var imgs=document.createElement('img');
+                            imgs.id="imgu";
+                            imgs.src='http://daviea.vastserve.com/pixivproxy.php?url=' + data.illust.meta_single_page.original_image_url;
+                            document.getElementById("imglist").appendChild(imgs);
+                            imgu.onload = function() {
+                                document.getElementsByClassName("meta")[0].innerText = "";
+
+                            }
+                        }
+                        else{
+                            document.getElementsByClassName("meta")[0].innerText = "";
+                            var create_date = new Date(data.illust.create_date);
+                            var url = 'http://daviea.vastserve.com/pixivproxy.php?url=' + data.illust.image_urls.medium;
+                            for(var pagenumber in data.illust.meta_pages){
+                                var xmc = 'http://daviea.vastserve.com/pixivproxy.php?url='+data.illust.meta_pages[pagenumber].image_urls.square_medium;
+                                var imgs=document.createElement('img');
+                                imgs.id="imgu";
+                                imgs.src=xmc;
+                                var ilss= document.createElement('li');
+                                ilss.id="liimg";
+                                ilss.appendChild(imgs);
+                                document.getElementById("imglist").appendChild(ilss);
+                                imgu.onload = function(){
+                                    document.getElementsByClassName("meta")[0].innerText = "";
+                                }
+                            }
+                        }
+
+                    }
+                },
+                function(error){}
+            )
+        }
+
+        </script>
+        <style>
+            #imgu{
+                width: 200;
+                height: auto;
+            }
+            #imglist{
+                width:600;
+                height:800;
+                overflow:auto;
+                list-style-type: decimal;
+
+            }
+            #sss{
+                width:500;
+                height: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <button onclick="get();">开始</button>
+        <input type="text" maxlength="10" name="id" value="" onkeypress="if(event.keyCode==13){get();return false;}" style="width:150px;">
+        <span class="meta"></span><br><br>
+        <ul id="imglist">
+
+        </ul>
+    </body>
+</html>
