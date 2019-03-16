@@ -68,7 +68,7 @@
                         if(data.illust.page_count==1){
                             var imgs=document.createElement('img');
                             imgs.id="imgu";
-                            imgs.src='http://daviea.vastserve.com/pixivproxy.php?url=' + data.illust.meta_single_page.original_image_url;
+                            imgs.src='http://daviea.1gb.ru/pixivproxy.php?url=' + data.illust.meta_single_page.original_image_url;
                             document.getElementById("imglist").appendChild(imgs);
                             imgu.onload = function() {
                                 document.getElementsByClassName("meta")[0].innerText = "";
@@ -78,9 +78,9 @@
                         else{
                             document.getElementsByClassName("meta")[0].innerText = "";
                             var create_date = new Date(data.illust.create_date);
-                            var url = 'http://daviea.vastserve.com/pixivproxy.php?url=' + data.illust.image_urls.medium;
+                            var url = 'http://daviea.1gb.ru/pixivproxy.php?url=' + data.illust.image_urls.medium;
                             for(var pagenumber in data.illust.meta_pages){
-                                var xmc = 'http://daviea.vastserve.com/pixivproxy.php?url='+data.illust.meta_pages[pagenumber].image_urls.square_medium;
+                                var xmc = 'http://daviea.1gb.ru/pixivproxy.php?url='+data.illust.meta_pages[pagenumber].image_urls.square_medium;
                                 var imgs=document.createElement('img');
                                 imgs.id="imgu";
                                 imgs.src=xmc;
